@@ -1,31 +1,111 @@
-This is a repo for ChromeExtension
+# WebView Profiler
 
-# Main Feature
-- User have pre-saved profile of website HTML to remove.
+`WebView Profiler` is a Chrome extension that opens a DevTools panel for applying saved page-cleanup profiles to the currently inspected tab.
 
-# UI & Design
-## devtool page
-- A dropdown list of websites "Bigo.tv", "Facebook", "Google"
-- Equivalent to bigo-tv.json, facebook.json, google.json.
-- Each json contains what element to be remove from the active tab website when "Apply" button clicked.
+It is designed for sites whose layouts contain headers, overlays, sticky wrappers, or repeated components that you want to hide quickly without manually editing the page every time.
 
-## Example for page: bigo.tv
-- Remove <header class="PageHead-Component" *****>*****</header> the header tag inside <body> that has whatever inside the "*****".
-- Remove or disable the style in ".def-container .page-wrapper { padding-top: 60px;}" to padding-top:0px by hi-jack the element by using dom changes with !important.
-- Remove all the elments and components after the tag <div class="room-container"*****></div>.
+## What it does
 
-# Generated extension
+- Adds a DevTools panel with a website profile dropdown
+- Loads predefined cleanup rules from JSON files in `profiles/`
+- Applies the selected profile to the active tab when you click **Apply**
+- Supports three rule types:
+	- remove matching elements
+	- override CSS properties with `!important`
+	- remove everything after a matched anchor element
 
-This repository now contains a working Chrome extension scaffold that matches the README requirements:
+## Included profiles
 
-- A DevTools panel with a website dropdown.
-- Per-site JSON profiles in `profiles/`.
-- An `Apply` button that removes elements, changes styles, and removes following siblings from the active tab.
+- `bigo-tv.json`
+- `facebook.json`
+- `google.json`
 
-## How to load it in Chrome
+The Bigo.tv profile currently removes:
+
+- `header.PageHead-Component`
+- `div.FixTool-Component`
+- `div.privacy-popup`
+- `div.chat-item.type-init`
+
+It also applies style overrides such as:
+
+- `.def-container .page-wrapper { padding-top: 0px !important; }`
+- `.room[data-v-34d904d8] { margin: 0px !important; }`
+
+and removes all elements that appear after `div.room-container`.
+
+## Project structure
+
+- `manifest.json` — Chrome extension manifest
+- `devtools.html` / `devtools.js` — registers the DevTools panel
+- `panel.html` / `panel.css` / `panel.js` — panel UI and profile runner
+- `profiles/` — JSON cleanup profiles for each site
+
+## How to install
 
 1. Open `chrome://extensions/`
-2. Enable `Developer mode`
-3. Click `Load unpacked`
-4. Select this folder: `ChromeExtension-WebViewProfiler`
-5. Open DevTools on a page, then use the `WebView Profiler` panel
+2. Turn on **Developer mode**
+3. Click **Load unpacked**
+4. Select the `ChromeExtension-WebViewProfiler` folder
+5. Open DevTools on any page and choose the **WebView Profiler** panel
+
+## How it works
+
+Each profile JSON file contains a list of rules. A rule can:
+
+- remove elements matching a CSS selector
+- change CSS properties on matched elements
+- remove all following siblings after a matched element
+
+The extension runs those rules inside the inspected page using the DevTools API, so the changes apply immediately to the active tab.
+
+## Profile format
+
+Example:
+
+```json
+{
+	"id": "example-site",
+	"label": "Example Site",
+	"description": "Cleans up the page layout.",
+	"rules": [
+		{
+			"type": "remove",
+			"selector": "header.site-header"
+		},
+		{
+			"type": "style",
+			"selector": ".page-wrapper",
+			"declarations": {
+				"padding-top": {
+					"value": "0px",
+					"important": true
+				}
+			}
+		},
+		{
+			"type": "removeAfter",
+			"selector": ".main-content"
+		}
+	]
+}
+```
+
+## Customizing profiles
+
+To add or update a site profile:
+
+1. Edit or create a file in `profiles/`
+2. Add selectors that match the page elements you want to hide or change
+3. Refresh the extension in `chrome://extensions/`
+4. Reopen DevTools and apply the profile again
+
+## Notes
+
+- Profiles are selector-based, so they may need updates when a website changes its DOM structure.
+- The included Facebook and Google profiles are starter examples and may need refinement for the current site layout.
+- If a selector does not match anything, the panel will report it in the result message.
+
+## License
+
+No license has been specified yet.
