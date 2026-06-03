@@ -1,0 +1,33 @@
+{
+  "id": "bigo-tv",
+  "label": "Bigo.tv",
+  "description": "Cleans up the Bigo.tv layout by removing the header and overlay components, pinning the content wrapper to the top, and removing everything after the room container.",
+  "rules": [
+    {
+      "type": "remove",
+      "selector": "header.PageHead-Component"
+    },
+    {
+      "type": "remove",
+      "selector": "div.FixTool-Component"
+    },
+    {
+      "type": "remove",
+      "selector": "div.privacy-popup"
+    },
+    {
+      "type": "style",
+      "selector": ".def-container .page-wrapper",
+      "declarations": {
+        "padding-top": {
+          "value": "0px",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "removeAfter",
+      "selector": "div.room-container"
+    }
+  ]
+}

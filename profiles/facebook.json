@@ -1,0 +1,15 @@
+{
+  "id": "facebook",
+  "label": "Facebook",
+  "description": "Starter profile for Facebook. Update the selectors to match the UI you want to hide.",
+  "rules": [
+    {
+      "type": "remove",
+      "selector": "header[role='banner']"
+    },
+    {
+      "type": "remove",
+      "selector": "nav[aria-label='Facebook']"
+    }
+  ]
+}

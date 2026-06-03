@@ -1,0 +1,21 @@
+{
+  "id": "google",
+  "label": "Google",
+  "description": "Starter profile for Google. Adjust the selectors for the surfaces you want to remove or simplify.",
+  "rules": [
+    {
+      "type": "remove",
+      "selector": "#searchform"
+    },
+    {
+      "type": "style",
+      "selector": "body",
+      "declarations": {
+        "padding-top": {
+          "value": "0px",
+          "important": true
+        }
+      }
+    }
+  ]
+}

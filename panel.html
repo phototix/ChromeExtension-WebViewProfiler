@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebView Profiler</title>
+    <link rel="stylesheet" href="panel.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">DevTools panel</p>
+        <h1>WebView Profiler</h1>
+        <p class="subtitle">
+          Pick a pre-saved website profile and apply DOM cleanup rules to the
+          active tab.
+        </p>
+      </section>
+
+      <section class="card controls">
+        <label class="field">
+          <span>Website profile</span>
+          <select id="profileSelect" aria-label="Website profile"></select>
+        </label>
+
+        <div class="actions">
+          <button id="applyButton" class="primary" type="button">Apply</button>
+        </div>
+      </section>
+
+      <section class="card details">
+        <div>
+          <p class="label">Profile notes</p>
+          <p id="profileDescription" class="description"></p>
+        </div>
+        <div>
+          <p class="label">Last result</p>
+          <p id="statusMessage" class="status">Ready.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="panel.js"></script>
+  </body>
+</html>
