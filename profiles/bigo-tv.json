@@ -17,6 +17,16 @@
     },
     {
       "type": "style",
+      "selector": ".room",
+      "declarations": {
+        "margin": {
+          "value": "0px",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
       "selector": ".def-container .page-wrapper",
       "declarations": {
         "padding-top": {
@@ -28,6 +38,10 @@
     {
       "type": "removeAfter",
       "selector": "div.room-container"
+    },
+    {
+      "type": "remove",
+      "selector": "div.chat-item.type-init"
     }
   ]
 }
