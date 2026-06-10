@@ -31,6 +31,16 @@
     },
     {
       "type": "style",
+      "selector": ".room-container__right",
+      "declarations": {
+        "min-height": {
+          "value": "500px",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
       "selector": ".def-container .page-wrapper",
       "declarations": {
         "padding-top": {
