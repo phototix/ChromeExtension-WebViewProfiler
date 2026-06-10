@@ -1,23 +1,47 @@
 {
   "id": "bigo-tv",
   "label": "Bigo.tv",
-  "description": "Cleans up the Bigo.tv layout by removing the header and overlay components, pinning the content wrapper to the top, and removing everything after the room container.",
+  "description": "Cleans up the Bigo.tv layout by hiding header/overlay components, pinning the content wrapper to the top, and hiding everything after the room container without breaking reactive DOM updates.",
   "rules": [
     {
-      "type": "remove",
-      "selector": "header.PageHead-Component"
+      "type": "style",
+      "selector": "header.PageHead-Component",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
     },
     {
-      "type": "remove",
-      "selector": "div.FixTool-Component"
+      "type": "style",
+      "selector": "div.FixTool-Component",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
     },
     {
-      "type": "remove",
-      "selector": "div.privacy-popup"
+      "type": "style",
+      "selector": "div.privacy-popup",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
     },
     {
-      "type": "remove",
-      "selector": ".room-video"
+      "type": "style",
+      "selector": ".room-video",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
     },
     {
       "type": "style",
@@ -50,12 +74,18 @@
       }
     },
     {
-      "type": "removeAfter",
+      "type": "hideAfter",
       "selector": "div.room-container"
     },
     {
-      "type": "remove",
-      "selector": "div.chat-item.type-init"
+      "type": "style",
+      "selector": "div.chat-item.type-init",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
     }
   ]
 }
