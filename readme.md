@@ -7,6 +7,7 @@ It is designed for sites whose layouts contain headers, overlays, sticky wrapper
 ## What it does
 
 - Adds a DevTools panel with a website profile dropdown
+- Adds a DevTools panel button to resize the browser window for an approximate 60/40 DevTools/page split
 - Loads predefined cleanup rules from JSON files in `profiles/`
 - Applies the selected profile to the active tab when you click **Apply**
 - Supports three rule types:

@@ -78,6 +78,11 @@ body {
   gap: 8px;
 }
 
+.actions {
+  display: grid;
+  gap: 10px;
+}
+
 select,
 button {
   width: 100%;
@@ -111,6 +116,17 @@ button.primary {
 
 button.primary:hover {
   background: linear-gradient(180deg, #a7f3d0 0%, var(--accent-strong) 100%);
+}
+
+button.secondary {
+  color: var(--text);
+  border-color: rgba(148, 163, 184, 0.32);
+  background: linear-gradient(180deg, #243144 0%, #172033 100%);
+  font-weight: 600;
+}
+
+button.secondary:hover {
+  background: linear-gradient(180deg, #2b3a50 0%, #1b263c 100%);
 }
 
 button:disabled {

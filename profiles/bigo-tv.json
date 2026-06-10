@@ -5,6 +5,10 @@
   "rules": [
     {
       "type": "remove",
+      "selector": "room-video"
+    },
+    {
+      "type": "remove",
       "selector": "header.PageHead-Component"
     },
     {

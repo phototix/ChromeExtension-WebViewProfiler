@@ -18,6 +18,7 @@ const PROFILES = [
 
 const profileSelect = document.getElementById("profileSelect");
 const applyButton = document.getElementById("applyButton");
+const fitLayoutButton = document.getElementById("fitLayoutButton");
 const profileDescription = document.getElementById("profileDescription");
 const statusMessage = document.getElementById("statusMessage");
 
@@ -30,8 +31,53 @@ function setStatus(message, isError = false) {
 
 function setLoading(isLoading) {
   applyButton.disabled = isLoading;
+  fitLayoutButton.disabled = isLoading;
   profileSelect.disabled = isLoading;
   applyButton.textContent = isLoading ? "Applying…" : "Apply";
+  fitLayoutButton.textContent = isLoading ? "Resizing…" : "Fit 60/40 layout";
+}
+
+function evalInspectedWindow(expression) {
+  return new Promise((resolve, reject) => {
+    chrome.devtools.inspectedWindow.eval(
+      expression,
+      { useContentScriptContext: false },
+      (result, exceptionInfo) => {
+        if (exceptionInfo && exceptionInfo.isException) {
+          reject(new Error(exceptionInfo.value || "Unknown exception"));
+          return;
+        }
+
+        resolve(result);
+      }
+    );
+  });
+}
+
+function getCurrentWindow() {
+  return new Promise((resolve, reject) => {
+    chrome.windows.getCurrent({ populate: false }, (currentWindow) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+
+      resolve(currentWindow);
+    });
+  });
+}
+
+function updateWindowSize(windowId, width, height) {
+  return new Promise((resolve, reject) => {
+    chrome.windows.update(windowId, { width, height }, (updatedWindow) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+
+      resolve(updatedWindow);
+    });
+  });
 }
 
 async function loadProfile(profileId) {
@@ -173,6 +219,42 @@ async function applyProfile() {
   );
 }
 
+async function fitConsoleAndPageLayout() {
+  setLoading(true);
+  setStatus("Resizing console and active page to a 60/40 split…");
+
+  try {
+    const [currentWindow, devtoolsWidth, pageWidth] = await Promise.all([
+      getCurrentWindow(),
+      Promise.resolve(window.innerWidth),
+      evalInspectedWindow("window.innerWidth"),
+    ]);
+
+    if (!currentWindow || typeof currentWindow.id !== "number") {
+      throw new Error("Unable to determine the current browser window.");
+    }
+
+    const chromeFrameWidth = Math.max(
+      0,
+      (currentWindow.width || 0) - devtoolsWidth - pageWidth
+    );
+    const targetWidth = Math.max(
+      320,
+      Math.round(chromeFrameWidth + devtoolsWidth / 0.6)
+    );
+
+    await updateWindowSize(currentWindow.id, targetWidth, currentWindow.height);
+
+    setStatus(
+      "Adjusted the host window for an approximate 60% DevTools / 40% page split."
+    );
+  } catch (error) {
+    setStatus(error.message, true);
+  } finally {
+    setLoading(false);
+  }
+}
+
 function populateProfileList() {
   PROFILES.forEach((profile) => {
     const option = document.createElement("option");
@@ -193,6 +275,10 @@ applyButton.addEventListener("click", () => {
     setLoading(false);
     setStatus(error.message, true);
   });
+});
+
+fitLayoutButton.addEventListener("click", () => {
+  fitConsoleAndPageLayout();
 });
 
 populateProfileList();

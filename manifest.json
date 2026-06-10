@@ -3,7 +3,7 @@
   "name": "WebView Profiler",
   "version": "1.0.0",
   "description": "Apply saved DOM cleanup profiles to the active tab from a DevTools panel.",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "windows"],
   "devtools_page": "devtools.html",
   "action": {
     "default_title": "WebView Profiler"
