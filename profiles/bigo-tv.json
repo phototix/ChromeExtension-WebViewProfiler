@@ -58,7 +58,7 @@
       "selector": ".room-container__right",
       "declarations": {
         "min-height": {
-          "value": "500px",
+          "value": "600px",
           "important": true
         }
       }
