@@ -44,6 +44,10 @@
       }
     },
     {
+      "type": "stopMedia",
+      "selector": "#liveVideo_html5_api"
+    },
+    {
       "type": "style",
       "selector": ".room",
       "declarations": {

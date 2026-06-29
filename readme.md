@@ -10,10 +10,13 @@ It is designed for sites whose layouts contain headers, overlays, sticky wrapper
 - Adds a DevTools panel button to resize the browser window for an approximate 60/40 DevTools/page split
 - Loads predefined cleanup rules from JSON files in `profiles/`
 - Applies the selected profile to the active tab when you click **Apply**
-- Supports three rule types:
+- Shows a per-profile rule activation list in the panel
+- Lets you dynamically toggle `style`, `pauseMedia`, and `stopMedia` rules on/off before apply
+- Supports four rule types:
 	- remove matching elements
 	- override CSS properties with `!important`
-	- remove everything after a matched anchor element
+	- remove or hide everything after a matched anchor element
+	- pause media elements, disable autoplay/preload, and clear media `src` values
 
 ## Included profiles
 
@@ -56,9 +59,18 @@ Each profile JSON file contains a list of rules. A rule can:
 
 - remove elements matching a CSS selector
 - change CSS properties on matched elements
-- remove all following siblings after a matched element
+- remove or hide all following siblings after a matched element
+- pause matching `<video>`/`<audio>` elements (or media within a matched container)
+- if media `src` (or nested `<source src>`) has a value, set it to `""` to stop loading
+
+`pauseMedia` and `stopMedia` are both supported and currently run the same media-stop behavior.
 
 The extension runs those rules inside the inspected page using the DevTools API, so the changes apply immediately to the active tab.
+
+In the panel, each rule from the selected JSON profile is listed with its selector and type:
+
+- `style`, `pauseMedia`, and `stopMedia` rules can be turned **ON/OFF** dynamically.
+- Other rule types (for example `remove`, `removeAfter`, `hideAfter`) are shown as **ALWAYS ON**.
 
 ## Profile format
 
@@ -87,6 +99,10 @@ Example:
 		{
 			"type": "removeAfter",
 			"selector": ".main-content"
+		},
+		{
+			"type": "stopMedia",
+			"selector": "#heroVideo"
 		}
 	]
 }

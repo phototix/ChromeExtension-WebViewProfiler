@@ -20,9 +20,123 @@ const profileSelect = document.getElementById("profileSelect");
 const applyButton = document.getElementById("applyButton");
 const fitLayoutButton = document.getElementById("fitLayoutButton");
 const profileDescription = document.getElementById("profileDescription");
+const ruleActivationList = document.getElementById("ruleActivationList");
 const statusMessage = document.getElementById("statusMessage");
 
 const profileCache = new Map();
+const profileRuleToggleState = new Map();
+
+function isToggleableRule(rule) {
+  return (
+    rule?.type === "style" ||
+    rule?.type === "pauseMedia" ||
+    rule?.type === "stopMedia"
+  );
+}
+
+function ensureRuleToggleState(profileId, profile) {
+  if (!profileRuleToggleState.has(profileId)) {
+    profileRuleToggleState.set(profileId, new Map());
+  }
+
+  const toggles = profileRuleToggleState.get(profileId);
+  const rules = Array.isArray(profile?.rules) ? profile.rules : [];
+
+  rules.forEach((rule, index) => {
+    if (isToggleableRule(rule) && !toggles.has(index)) {
+      toggles.set(index, true);
+    }
+  });
+
+  return toggles;
+}
+
+function getActiveRuleCount(profileId, profile) {
+  const rules = Array.isArray(profile?.rules) ? profile.rules : [];
+  const toggles = ensureRuleToggleState(profileId, profile);
+
+  return rules.reduce((count, rule, index) => {
+    if (!isToggleableRule(rule)) {
+      return count + 1;
+    }
+
+    return toggles.get(index) === false ? count : count + 1;
+  }, 0);
+}
+
+function renderRuleActivationList(profileId, profile) {
+  const rules = Array.isArray(profile?.rules) ? profile.rules : [];
+  const toggles = ensureRuleToggleState(profileId, profile);
+
+  ruleActivationList.textContent = "";
+
+  if (!rules.length) {
+    const emptyItem = document.createElement("li");
+    emptyItem.className = "rule-item";
+    emptyItem.textContent = "No rules configured for this profile.";
+    ruleActivationList.appendChild(emptyItem);
+    return;
+  }
+
+  rules.forEach((rule, index) => {
+    const toggleable = isToggleableRule(rule);
+    const isActive = toggleable ? toggles.get(index) !== false : true;
+
+    const item = document.createElement("li");
+    item.className = "rule-item";
+
+    const label = document.createElement("label");
+    label.className = "rule-toggle";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = isActive;
+    checkbox.disabled = !toggleable;
+    checkbox.dataset.locked = toggleable ? "false" : "true";
+    checkbox.addEventListener("change", () => {
+      toggles.set(index, checkbox.checked);
+      renderProfileDescription(profileId, profile);
+      renderRuleActivationList(profileId, profile);
+    });
+
+    const main = document.createElement("div");
+    main.className = "rule-main";
+
+    const type = document.createElement("p");
+    type.className = "rule-type";
+    type.textContent = rule.type || "unknown";
+
+    const selector = document.createElement("p");
+    selector.className = "rule-selector";
+    selector.textContent = rule.selector || "(no selector)";
+
+    main.append(type, selector);
+
+    const state = document.createElement("span");
+    state.className = `rule-state ${toggleable ? (isActive ? "on" : "off") : "locked"}`;
+    state.textContent = toggleable ? (isActive ? "ON" : "OFF") : "ALWAYS ON";
+
+    label.append(checkbox, main, state);
+    item.appendChild(label);
+    ruleActivationList.appendChild(item);
+  });
+}
+
+function getEffectiveProfile(profileId, profile) {
+  const rules = Array.isArray(profile?.rules) ? profile.rules : [];
+  const toggles = ensureRuleToggleState(profileId, profile);
+
+  return {
+    ...profile,
+    rules: rules.filter((rule, index) => {
+      if (!isToggleableRule(rule)) {
+        return true;
+      }
+
+      return toggles.get(index) !== false;
+    }),
+  };
+}
 
 function setStatus(message, isError = false) {
   statusMessage.textContent = message;
@@ -33,6 +147,13 @@ function setLoading(isLoading) {
   applyButton.disabled = isLoading;
   fitLayoutButton.disabled = isLoading;
   profileSelect.disabled = isLoading;
+  ruleActivationList
+    .querySelectorAll('input[type="checkbox"]')
+    .forEach((checkbox) => {
+      if (checkbox.dataset.locked !== "true") {
+        checkbox.disabled = isLoading;
+      }
+    });
   applyButton.textContent = isLoading ? "Applying…" : "Apply";
   fitLayoutButton.textContent = isLoading ? "Resizing…" : "Fit 60/40 layout";
 }
@@ -100,11 +221,13 @@ async function loadProfile(profileId) {
   return profile;
 }
 
-function renderProfileDescription(profile) {
+function renderProfileDescription(profileId, profile) {
   const lines = [profile.description || "No description provided."];
 
   if (Array.isArray(profile.rules)) {
-    lines.push(`${profile.rules.length} cleanup rule${profile.rules.length === 1 ? "" : "s"}.`);
+    const total = profile.rules.length;
+    const active = getActiveRuleCount(profileId, profile);
+    lines.push(`${active} active of ${total} cleanup rule${total === 1 ? "" : "s"}.`);
   }
 
   profileDescription.textContent = lines.join(" ");
@@ -114,7 +237,7 @@ function buildInspectionScript(profile) {
   return [
     "(() => {",
     `  const profile = ${JSON.stringify(profile)};`,
-    "  const report = { removed: 0, styled: 0, removedAfter: 0, hiddenAfter: 0, hiddenInstead: 0, missing: [] };",
+    "  const report = { removed: 0, styled: 0, paused: 0, clearedSrc: 0, removedAfter: 0, hiddenAfter: 0, hiddenInstead: 0, missing: [] };",
     "",
     "  const applyStyleDeclarations = (element, declarations) => {",
     "    Object.entries(declarations).forEach(([property, value]) => {",
@@ -160,6 +283,48 @@ function buildInspectionScript(profile) {
     "    return element.matches(selector) || !!element.querySelector(selector);",
     "  };",
     "",
+    "  const pauseMediaInTarget = (element) => {",
+    "    if (!element || element.nodeType !== 1) {",
+    "      return;",
+    "    }",
+    "",
+    "    const mediaElements = element instanceof HTMLMediaElement",
+    "      ? [element]",
+    "      : Array.from(element.querySelectorAll('video, audio'));",
+    "",
+    "    mediaElements.forEach((media) => {",
+    "      media.autoplay = false;",
+    "      media.removeAttribute('autoplay');",
+    "      media.preload = 'none';",
+    "      media.setAttribute('preload', 'none');",
+    "      media.muted = true;",
+    "      media.setAttribute('muted', '');",
+    "      if (typeof media.pause === 'function') {",
+    "        media.pause();",
+    "      }",
+    "",
+    "      const srcValue = media.getAttribute('src');",
+    "      if (typeof srcValue === 'string' && srcValue.trim() !== '') {",
+    "        media.setAttribute('src', '');",
+    "        media.src = '';",
+    "        if (typeof media.load === 'function') {",
+    "          media.load();",
+    "        }",
+    "        report.clearedSrc += 1;",
+    "      } else {",
+    "        const sourceNodes = Array.from(media.querySelectorAll('source[src]'));",
+    "        if (sourceNodes.length) {",
+    "          sourceNodes.forEach((source) => source.setAttribute('src', ''));",
+    "          if (typeof media.load === 'function') {",
+    "            media.load();",
+    "          }",
+    "          report.clearedSrc += 1;",
+    "        }",
+    "      }",
+    "      report.paused += 1;",
+    "    });",
+    "  };",
+    "",
     "  profile.rules.forEach((rule) => {",
     "    const targets = document.querySelectorAll(rule.selector);",
     "",
@@ -190,6 +355,11 @@ function buildInspectionScript(profile) {
     "      return;",
     "    }",
     "",
+    "    if (rule.type === 'pauseMedia' || rule.type === 'stopMedia') {",
+    "      targets.forEach((element) => pauseMediaInTarget(element));",
+    "      return;",
+    "    }",
+    "",
     "    if (rule.type === 'removeAfter' || rule.type === 'hideAfter') {",
     "      const mode = rule.type === 'removeAfter' && rule.forceRemove === true ? 'remove' : 'hide';",
     "      targets.forEach((element) => cleanupFollowingSiblings(element, mode));",
@@ -204,13 +374,15 @@ function buildInspectionScript(profile) {
 async function refreshProfileDetails() {
   const profileId = profileSelect.value;
   const profile = await loadProfile(profileId);
-  renderProfileDescription(profile);
+  renderProfileDescription(profileId, profile);
+  renderRuleActivationList(profileId, profile);
 }
 
 async function applyProfile() {
   const profileId = profileSelect.value;
   const profile = await loadProfile(profileId);
-  const script = buildInspectionScript(profile);
+  const effectiveProfile = getEffectiveProfile(profileId, profile);
+  const script = buildInspectionScript(effectiveProfile);
 
   setLoading(true);
   setStatus(`Applying ${profile.label}…`);
@@ -229,6 +401,8 @@ async function applyProfile() {
 
       const removed = result?.removed ?? 0;
       const styled = result?.styled ?? 0;
+      const paused = result?.paused ?? 0;
+      const clearedSrc = result?.clearedSrc ?? 0;
       const removedAfter = result?.removedAfter ?? 0;
       const hiddenAfter = result?.hiddenAfter ?? 0;
       const hiddenInstead = result?.hiddenInstead ?? 0;
@@ -236,9 +410,12 @@ async function applyProfile() {
 
       const summaryParts = [
         `${profile.label} applied.`,
+        `${effectiveProfile.rules.length} active rule${effectiveProfile.rules.length === 1 ? "" : "s"} executed`,
         `${removed} element${removed === 1 ? "" : "s"} removed`,
         `${hiddenInstead} video-related target${hiddenInstead === 1 ? "" : "s"} hidden instead of removed`,
         `${styled} style target${styled === 1 ? "" : "s"} updated`,
+        `${paused} media element${paused === 1 ? "" : "s"} paused`,
+        `${clearedSrc} media source${clearedSrc === 1 ? "" : "s"} cleared`,
         `${hiddenAfter} sibling${hiddenAfter === 1 ? "" : "s"} hidden after target`,
         `${removedAfter} sibling${removedAfter === 1 ? "" : "s"} removed after target`,
       ];
