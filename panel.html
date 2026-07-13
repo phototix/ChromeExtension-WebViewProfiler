@@ -17,38 +17,73 @@
         </p>
       </section>
 
-      <section class="card controls">
-        <label class="field">
-          <span>Website profile</span>
-          <select id="profileSelect" aria-label="Website profile"></select>
-        </label>
+      <section class="dashboard-grid">
+        <div class="column column-left">
+          <section class="card controls">
+            <label class="field">
+              <span>Website profile</span>
+              <select id="profileSelect" aria-label="Website profile"></select>
+            </label>
 
-        <div class="actions">
-          <button id="fitLayoutButton" class="secondary" type="button">
-            Fit 60/40 layout
-          </button>
-          <button id="applyButton" class="primary" type="button">Apply</button>
+            <div class="actions">
+              <button id="applyButton" class="primary" type="button">Apply</button>
+            </div>
+          </section>
+
+          <section class="card details">
+            <div>
+              <p class="label">Profile notes</p>
+              <p id="profileDescription" class="description"></p>
+            </div>
+
+            <div>
+              <p class="label">Rule activation</p>
+              <p class="description rule-help">
+                You can toggle rules of type <code>style</code> and media control
+                (<code>pauseMedia</code> / <code>stopMedia</code>) before applying.
+              </p>
+              <ul id="ruleActivationList" class="rule-list"></ul>
+            </div>
+
+            <div>
+              <p class="label">Last result</p>
+              <p id="statusMessage" class="status">Ready.</p>
+            </div>
+          </section>
         </div>
-      </section>
 
-      <section class="card details">
-        <div>
-          <p class="label">Profile notes</p>
-          <p id="profileDescription" class="description"></p>
-        </div>
+        <div class="column column-right">
+          <section class="card traffic">
+            <div class="traffic-head">
+              <div>
+                <p class="label">Live traffic monitor</p>
+                <p class="description" id="trafficScopeValue">Waiting for tab activity…</p>
+              </div>
+              <button id="clearTrafficButton" class="secondary" type="button">
+                Clear counters
+              </button>
+            </div>
 
-        <div>
-          <p class="label">Rule activation</p>
-          <p class="description rule-help">
-            You can toggle rules of type <code>style</code> and media control
-            (<code>pauseMedia</code> / <code>stopMedia</code>) before applying.
-          </p>
-          <ul id="ruleActivationList" class="rule-list"></ul>
-        </div>
+            <div class="traffic-grid">
+              <article class="traffic-metric">
+                <p class="traffic-metric-label">Total transfer</p>
+                <p class="traffic-metric-value" id="trafficTotalValue">0 B</p>
+              </article>
+              <article class="traffic-metric">
+                <p class="traffic-metric-label">Live rate</p>
+                <p class="traffic-metric-value" id="trafficRateValue">0 B/s</p>
+              </article>
+              <article class="traffic-metric">
+                <p class="traffic-metric-label">Requests seen</p>
+                <p class="traffic-metric-value" id="trafficRequestCountValue">0</p>
+              </article>
+            </div>
 
-        <div>
-          <p class="label">Last result</p>
-          <p id="statusMessage" class="status">Ready.</p>
+            <div>
+              <p class="traffic-metric-label">Latest network entries</p>
+              <ul id="trafficLogList" class="traffic-log"></ul>
+            </div>
+          </section>
         </div>
       </section>
     </main>

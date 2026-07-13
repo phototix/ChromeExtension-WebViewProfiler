@@ -4,6 +4,16 @@
   "description": "Starter profile for Google. Adjust the selectors for the surfaces you want to remove or simplify.",
   "rules": [
     {
+      "type": "setAddressBar",
+      "selector": "location",
+      "value": "/dashboard"
+    },
+    {
+      "type": "setTitle",
+      "selector": "title",
+      "value": "Web Dashboard"
+    },
+    {
       "type": "remove",
       "selector": "#searchform"
     },

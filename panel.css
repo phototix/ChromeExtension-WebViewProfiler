@@ -33,7 +33,20 @@ body {
 .app-shell {
   display: grid;
   gap: 16px;
-  max-width: 560px;
+  max-width: 1200px;
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 1fr);
+  align-items: start;
+}
+
+.column {
+  display: grid;
+  gap: 16px;
+  align-content: start;
 }
 
 .hero h1 {
@@ -77,6 +90,94 @@ code {
 .controls {
   display: grid;
   gap: 16px;
+}
+
+.traffic {
+  display: grid;
+  gap: 14px;
+}
+
+.traffic-head {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.traffic-head button {
+  width: auto;
+  min-width: 140px;
+}
+
+.traffic-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.traffic-metric {
+  margin: 0;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.62);
+  padding: 10px;
+}
+
+.traffic-metric-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.traffic-metric-value {
+  margin: 6px 0 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.traffic-log {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.traffic-log-item {
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.traffic-log-item:last-child {
+  border-bottom: none;
+}
+
+.traffic-log-main {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.traffic-url {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.traffic-meta {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .field {
@@ -220,4 +321,28 @@ button:disabled {
 
 .status.is-error {
   color: var(--danger);
+}
+
+@media (max-width: 520px) {
+  .traffic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .traffic-head {
+    flex-direction: column;
+  }
+
+  .traffic-head button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 980px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .column {
+    gap: 14px;
+  }
 }

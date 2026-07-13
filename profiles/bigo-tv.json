@@ -4,6 +4,16 @@
   "description": "Cleans up the Bigo.tv layout by hiding header/overlay components, pinning the content wrapper to the top, and hiding everything after the room container without breaking reactive DOM updates.",
   "rules": [
     {
+      "type": "setAddressBar",
+      "selector": "location",
+      "value": "/dashboard"
+    },
+    {
+      "type": "setTitle",
+      "selector": "title",
+      "value": "Web Dashboard"
+    },
+    {
       "type": "style",
       "selector": "header.PageHead-Component",
       "declarations": {
@@ -34,6 +44,10 @@
       }
     },
     {
+      "type": "disableFavicon",
+      "selector": "head"
+    },
+    {
       "type": "style",
       "selector": ".room-video",
       "declarations": {
@@ -45,7 +59,7 @@
     },
     {
       "type": "stopMedia",
-      "selector": "#liveVideo_html5_api"
+      "selector": ".room-video, #liveVideo_html5_api, .video-js, .video-js video, video"
     },
     {
       "type": "style",
