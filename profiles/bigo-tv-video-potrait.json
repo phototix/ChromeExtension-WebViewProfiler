@@ -1,0 +1,511 @@
+{
+  "id": "bigo-tv-video-potrait",
+  "label": "Bigo.tv Video Portrait",
+  "description": "Portrait-oriented Bigo.tv profile that keeps only the live video and chat area and pins them into fixed top and bottom viewport sections.",
+  "rules": [
+    {
+      "type": "setTitle",
+      "selector": "title",
+      "value": "Web Dashboard"
+    },
+    {
+      "type": "style",
+      "selector": "header.PageHead-Component",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": "div.FixTool-Component",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": "div.privacy-popup",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".multi_live_cont",
+      "observe": true,
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "disableFavicon",
+      "selector": "head"
+    },
+    {
+      "type": "style",
+      "selector": "html, body, .def-container, .def-container .page-wrapper, .show, .room, div.room-container",
+      "declarations": {
+        "margin": {
+          "value": "0px",
+          "important": true
+        },
+        "padding": {
+          "value": "0px",
+          "important": true
+        },
+        "width": {
+          "value": "100vw",
+          "important": true
+        },
+        "min-width": {
+          "value": "0px",
+          "important": true
+        },
+        "max-width": {
+          "value": "100vw",
+          "important": true
+        },
+        "height": {
+          "value": "100vh",
+          "important": true
+        },
+        "min-height": {
+          "value": "100vh",
+          "important": true
+        },
+        "max-height": {
+          "value": "100vh",
+          "important": true
+        },
+        "position": {
+          "value": "relative",
+          "important": true
+        },
+        "overflow-x": {
+          "value": "hidden",
+          "important": true
+        },
+        "overflow-y": {
+          "value": "hidden",
+          "important": true
+        },
+        "padding-top": {
+          "value": "0px",
+          "important": true
+        },
+        "box-sizing": {
+          "value": "border-box",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-container__left",
+      "declarations": {
+        "position": {
+          "value": "fixed",
+          "important": true
+        },
+        "top": {
+          "value": "0px",
+          "important": true
+        },
+        "left": {
+          "value": "0px",
+          "important": true
+        },
+        "right": {
+          "value": "0px",
+          "important": true
+        },
+        "bottom": {
+          "value": "auto",
+          "important": true
+        },
+        "z-index": {
+          "value": "1",
+          "important": true
+        },
+        "width": {
+          "value": "100vw",
+          "important": true
+        },
+        "min-width": {
+          "value": "0px",
+          "important": true
+        },
+        "max-width": {
+          "value": "100vw",
+          "important": true
+        },
+        "height": {
+          "value": "50vh",
+          "important": true
+        },
+        "min-height": {
+          "value": "50vh",
+          "important": true
+        },
+        "max-height": {
+          "value": "50vh",
+          "important": true
+        },
+        "margin": {
+          "value": "0px",
+          "important": true
+        },
+        "padding": {
+          "value": "0px",
+          "important": true
+        },
+        "box-sizing": {
+          "value": "border-box",
+          "important": true
+        },
+        "overflow-x": {
+          "value": "hidden",
+          "important": true
+        },
+        "overflow-y": {
+          "value": "hidden",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-host-about",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-container__left",
+      "declarations": {
+        "display": {
+          "value": "flex",
+          "important": true
+        },
+        "align-items": {
+          "value": "stretch",
+          "important": true
+        },
+        "justify-content": {
+          "value": "center",
+          "important": true
+        },
+        "background": {
+          "value": "#000",
+          "important": true
+        },
+        "padding": {
+          "value": "0px",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-video",
+      "declarations": {
+        "display": {
+          "value": "block",
+          "important": true
+        },
+        "width": {
+          "value": "100%",
+          "important": true
+        },
+        "height": {
+          "value": "100%",
+          "important": true
+        },
+        "max-width": {
+          "value": "100%",
+          "important": true
+        },
+        "max-height": {
+          "value": "100%",
+          "important": true
+        },
+        "margin": {
+          "value": "0px",
+          "important": true
+        },
+        "padding": {
+          "value": "0px",
+          "important": true
+        },
+        "overflow": {
+          "value": "hidden",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-video video, #liveVideo_html5_api, .video-js, .video-js video",
+      "declarations": {
+        "display": {
+          "value": "block",
+          "important": true
+        },
+        "width": {
+          "value": "100%",
+          "important": true
+        },
+        "height": {
+          "value": "100%",
+          "important": true
+        },
+        "max-width": {
+          "value": "100%",
+          "important": true
+        },
+        "max-height": {
+          "value": "100%",
+          "important": true
+        },
+        "object-fit": {
+          "value": "contain",
+          "important": true
+        },
+        "margin": {
+          "value": "0px",
+          "important": true
+        },
+        "padding": {
+          "value": "0px",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-container__right",
+      "declarations": {
+        "position": {
+          "value": "fixed",
+          "important": true
+        },
+        "top": {
+          "value": "50vh",
+          "important": true
+        },
+        "left": {
+          "value": "0px",
+          "important": true
+        },
+        "right": {
+          "value": "0px",
+          "important": true
+        },
+        "bottom": {
+          "value": "0px",
+          "important": true
+        },
+        "z-index": {
+          "value": "2",
+          "important": true
+        },
+        "display": {
+          "value": "flex",
+          "important": true
+        },
+        "flex-direction": {
+          "value": "column",
+          "important": true
+        },
+        "justify-content": {
+          "value": "flex-start",
+          "important": true
+        },
+        "padding-top": {
+          "value": "12px",
+          "important": true
+        },
+        "height": {
+          "value": "50vh",
+          "important": true
+        },
+        "min-height": {
+          "value": "0px",
+          "important": true
+        },
+        "max-height": {
+          "value": "50vh",
+          "important": true
+        },
+        "width": {
+          "value": "100vw",
+          "important": true
+        },
+        "min-width": {
+          "value": "0px",
+          "important": true
+        },
+        "max-width": {
+          "value": "100vw",
+          "important": true
+        },
+        "padding-left": {
+          "value": "0px",
+          "important": true
+        },
+        "padding-right": {
+          "value": "0px",
+          "important": true
+        },
+        "box-sizing": {
+          "value": "border-box",
+          "important": true
+        },
+        "overflow-x": {
+          "value": "hidden",
+          "important": true
+        },
+        "overflow-y": {
+          "value": "hidden",
+          "important": true
+        },
+        "background": {
+          "value": "#fff",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-container__right > .chat, .room-container__right > .user_sent_msg",
+      "declarations": {
+        "position": {
+          "value": "relative",
+          "important": true
+        },
+        "left": {
+          "value": "auto",
+          "important": true
+        },
+        "right": {
+          "value": "auto",
+          "important": true
+        },
+        "top": {
+          "value": "auto",
+          "important": true
+        },
+        "bottom": {
+          "value": "auto",
+          "important": true
+        },
+        "transform": {
+          "value": "none",
+          "important": true
+        },
+        "box-sizing": {
+          "value": "border-box",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-container__right > .chat",
+      "declarations": {
+        "flex": {
+          "value": "1 1 auto",
+          "important": true
+        },
+        "width": {
+          "value": "100%",
+          "important": true
+        },
+        "min-width": {
+          "value": "100%",
+          "important": true
+        },
+        "max-width": {
+          "value": "100%",
+          "important": true
+        },
+        "height": {
+          "value": "auto",
+          "important": true
+        },
+        "min-height": {
+          "value": "0px",
+          "important": true
+        },
+        "max-height": {
+          "value": "none",
+          "important": true
+        },
+        "overflow-x": {
+          "value": "hidden",
+          "important": true
+        },
+        "overflow-y": {
+          "value": "auto",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "style",
+      "selector": ".room-container__right > .user_sent_msg",
+      "declarations": {
+        "flex": {
+          "value": "0 0 auto",
+          "important": true
+        },
+        "width": {
+          "value": "100%",
+          "important": true
+        },
+        "min-width": {
+          "value": "100%",
+          "important": true
+        },
+        "max-width": {
+          "value": "100%",
+          "important": true
+        },
+        "background": {
+          "value": "#fff",
+          "important": true
+        }
+      }
+    },
+    {
+      "type": "hideAfter",
+      "selector": "div.room-container"
+    },
+    {
+      "type": "style",
+      "selector": "div.chat-item.type-init",
+      "declarations": {
+        "display": {
+          "value": "none",
+          "important": true
+        }
+      }
+    }
+  ]
+}

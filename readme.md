@@ -21,6 +21,7 @@ It is designed for sites whose layouts contain headers, overlays, sticky wrapper
 ## Included profiles
 
 - `bigo-tv.json`
+- `bigo-tv-video-potrait.json`
 - `facebook.json`
 - `google.json`
 
