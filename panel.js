@@ -23,6 +23,7 @@ const PROFILES = [
 
 const profileSelect = document.getElementById("profileSelect");
 const applyButton = document.getElementById("applyButton");
+const refreshPageButton = document.getElementById("refreshPageButton");
 const profileDescription = document.getElementById("profileDescription");
 const ruleActivationList = document.getElementById("ruleActivationList");
 const statusMessage = document.getElementById("statusMessage");
@@ -35,6 +36,7 @@ const clearTrafficButton = document.getElementById("clearTrafficButton");
 
 const profileCache = new Map();
 const profileRuleToggleState = new Map();
+const originalUrlByTab = new Map();
 const TRAFFIC_LOG_LIMIT = 30;
 
 const trafficState = {
@@ -415,6 +417,9 @@ function setStatus(message, isError = false) {
 
 function setLoading(isLoading) {
   applyButton.disabled = isLoading;
+  if (refreshPageButton) {
+    refreshPageButton.disabled = isLoading;
+  }
   profileSelect.disabled = isLoading;
   ruleActivationList
     .querySelectorAll('input[type="checkbox"]')
@@ -720,6 +725,7 @@ function buildInspectionScript(profile) {
     "    if (!window.__webViewProfilerAddressBarGuardState) {",
     "      window.__webViewProfilerAddressBarGuardState = {",
     "        desiredPath: null,",
+    "        originalHref: null,",
     "        methodsPatched: false,",
     "        popHandlersBound: false,",
     "        originalPushState: null,",
@@ -772,6 +778,9 @@ function buildInspectionScript(profile) {
     "    }",
     "",
     "    const state = getAddressBarGuardState();",
+    "    if (!state.originalHref) {",
+    "      state.originalHref = window.location.href;",
+    "    }",
     "    state.desiredPath = safePath;",
     "",
     "    if (!state.methodsPatched) {",
@@ -1172,6 +1181,52 @@ function buildInspectionScript(profile) {
   ].join('\n');
 }
 
+function hasActiveAddressBarRule(profile) {
+  return Array.isArray(profile?.rules)
+    ? profile.rules.some((rule) => rule?.type === "setAddressBar")
+    : false;
+}
+
+async function rememberOriginalUrlForCurrentTab() {
+  const tabId = chrome.devtools.inspectedWindow.tabId;
+  if (typeof tabId !== "number") {
+    return;
+  }
+
+  const originalUrl = await evalInspectedWindow(`(() => {
+    const state = window.__webViewProfilerAddressBarGuardState;
+    return state?.originalHref || window.location.href;
+  })()`);
+
+  const normalized = String(originalUrl || "").trim();
+  if (normalized) {
+    originalUrlByTab.set(tabId, normalized);
+  }
+}
+
+async function refreshActivePage() {
+  const tabId = chrome.devtools.inspectedWindow.tabId;
+  const cachedOriginalUrl =
+    typeof tabId === "number" ? originalUrlByTab.get(tabId) : null;
+
+  let targetUrl = String(cachedOriginalUrl || "").trim();
+
+  if (!targetUrl) {
+    const resolvedUrl = await evalInspectedWindow(`(() => {
+      const state = window.__webViewProfilerAddressBarGuardState;
+      return state?.originalHref || window.location.href;
+    })()`);
+    targetUrl = String(resolvedUrl || "").trim();
+  }
+
+  if (!targetUrl) {
+    throw new Error("Unable to determine the active page URL.");
+  }
+
+  setStatus(`Refreshing active page: ${targetUrl}`);
+  await evalInspectedWindow(`window.location.replace(${JSON.stringify(targetUrl)});`);
+}
+
 async function refreshProfileDetails() {
   const profileId = profileSelect.value;
   const profile = await loadProfile(profileId);
@@ -1183,6 +1238,11 @@ async function applyProfile() {
   const profileId = profileSelect.value;
   const profile = await loadProfile(profileId);
   const effectiveProfile = getEffectiveProfile(profileId, profile);
+
+  if (hasActiveAddressBarRule(effectiveProfile)) {
+    await rememberOriginalUrlForCurrentTab();
+  }
+
   const script = buildInspectionScript(effectiveProfile);
 
   setLoading(true);
@@ -1265,6 +1325,14 @@ applyButton.addEventListener("click", () => {
     setStatus(error.message, true);
   });
 });
+
+if (refreshPageButton) {
+  refreshPageButton.addEventListener("click", () => {
+    refreshActivePage().catch((error) => {
+      setStatus(error.message, true);
+    });
+  });
+}
 
 initializeTrafficMonitor();
 
